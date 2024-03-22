@@ -1,5 +1,7 @@
 import gradio as gr
+import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
 from enum import Enum
 
 # TODO: get the databases name
@@ -93,8 +95,8 @@ def generator_page():
         with gr.Column(visible=False) as choose_properties_page:
             with gr.Row():
                 with gr.Column(scale=4):
-                    gr.Dropdown(
-                        ["Type1", "Type2", "Type3"], label="Graph type", info="Select a graph type to display data"
+                    graph_type = gr.Dropdown(
+                        ["plot", "bar", "scatter", "hist"], label="Graph type", info="Select a graph type to display data"
                     ),
                     
                     gr.CheckboxGroup(
@@ -105,24 +107,47 @@ def generator_page():
                         ["property1", "property2", "property3"], label="Y-Axis", info="Select properties to aggregate"
                     ),
                 with gr.Column(scale=2):
-                    gr.BarPlot(
-                        pd.DataFrame({"a": [1, 2, 3], "b": [10, 20, 30]}),
-                        x="a",
-                        y="b",
-                        title="Simple Bar Plot with made up data",
-                        tooltip=["a", "b"],
-                        #y_lim=[20, 100],
-                    ),
-                    gr.Textbox(label="URL", placeholder="Create an embedding block in Notion and paste this URL"),
+                    plotted = gr.Plot(label="Plot"),
+                    url = gr.Textbox(label="URL", placeholder="Create an embedding block in Notion and paste this URL"),
 
-            submit_btn_3 = gr.Button("Generate")
+                submit_btn_3 = gr.Button("Generate")
 
-            def submit3(properties):
+                submit_btn_3.click(
+                    lambda: "Test",
+                    inputs=[],
+                    outputs=[]
+                )
+
+            """def submit3(graph_type):
                 print("Submit 3")
+
+                # TODO: retrieve data from database
+                # For now: mock data
+                x = np.linspace(0, 10, 100)
+                y = np.sin(x)
+
+                # Create a plot
+                fig, ax = plt.subplots()
+                
+                ax.set_xlabel("x")
+                ax.set_ylabel("y")
+                ax.set_title("Title")
+
+                # Plot types
+                if graph_type == "plot":
+                    ax.plot(x, y)
+                elif graph_type == "bar":
+                    ax.bar(x, y)
+                elif graph_type == "scatter":
+                    ax.scatter(x, y)
+                elif graph_type == "hist":
+                    ax.hist(y, bins=10)
+                else:
+                    ax.plot(x, y)
+
                 return {
-                    choose_properties_page: gr.Column(visible=False),
-                    #done_page: gr.Column(visible=True),
-                }
+                    plotted: fig,
+                }"""
 
         
 

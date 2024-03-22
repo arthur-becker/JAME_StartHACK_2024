@@ -17,11 +17,13 @@ def make_plot(req: gr.Request):
     x_column = params["x"]
     y_column = params["y"]
     api_key = params["api_key"]
+    title = params["title"]
     
     print(f"\nDatabase: {database}")
     print(f"X: {x_column}")
     print(f"Y: {y_column}")
     print(f"API Key: {api_key}")
+    print(f"Title: {title}")
 
     # TODO: retrieve data from database
     # For now: mock data
@@ -33,7 +35,7 @@ def make_plot(req: gr.Request):
     
     ax.set_xlabel("x")
     ax.set_ylabel("y")
-    ax.set_title("Simple Plot")
+    ax.set_title(title)
 
     # Plot types
     if type == "plot":
