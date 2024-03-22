@@ -5,12 +5,20 @@ import requests
 
 NOTION_TOKEN = "secret_7RzkbGjr3Z3gvzozIVWissfF8IzBMTzDZaIjjZV0l2s"
 DATABASE_ID = "092ca412-fb0a-4837-8964-eab011db9d2e"
-headers = {
-    "Authorization": "Bearer " + NOTION_TOKEN,
-    "Content-Type": "application/json",
-    "Notion-Version": "2022-06-28",
-}
-def create_entry(data: dict, database_id=DATABASE_ID):
+
+
+def get_headers(notion_token):
+    return {
+        "Authorization": "Bearer " + notion_token,
+        "Content-Type": "application/json",
+        "Notion-Version": "2022-06-28",
+    }
+    
+
+
+
+
+def create_entry(data: dict, database_id, headers):
     create_url = "https://api.notion.com/v1/pages"
 
     payload = {"parent": {"database_id": DATABASE_ID}, "properties": data}
@@ -29,7 +37,7 @@ published_date = datetime.now().astimezone(timezone.utc).isoformat()
 
 
 
-def get_pages(num_pages=None, database_id=DATABASE_ID):
+def get_pages(num_pages, database_id, headers):
     
     """If num_pages is None, get all pages, otherwise just the defined number."""
 
