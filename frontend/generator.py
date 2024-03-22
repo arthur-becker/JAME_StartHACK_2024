@@ -78,8 +78,8 @@ def generator_page():
     with gr.Blocks() as demo:
 
         with gr.Column(visible=True) as api_key_input_page:
-            api_key_input = gr.Textbox(label="API Key", placeholder="Enter your Notion API key")
-            page_id_input = gr.Textbox(label="Page ID", placeholder="Enter the ID the page with all databases")
+            api_key_input = gr.Textbox("secret_7RzkbGjr3Z3gvzozIVWissfF8IzBMTzDZaIjjZV0l2s", label="API Key", placeholder="Enter your Notion API key")
+            page_id_input = gr.Textbox("3ab56ccefa1c45f288245ef90d8820d9", label="Page ID", placeholder="Enter the ID the page with all databases")
             submit_btn_1 = gr.Button("Next")
         
             def submit1(api_key, page_id):
@@ -93,21 +93,34 @@ def generator_page():
 
                 blocks = de.retrieve_blocks(page_id, notion)
 
+                a = 0
+                b = 0
+                databases = []
+                for block in blocks:
+                    if "child_database" in block.keys():
+                        a += 1
+                        databases.append((block["id"],block["child_database"]["title"]))
+                print("Databases: ", databases)
+                # The data will be retrieved like here. On the other places, it just will be hardcoded
+                # TODO: implement retreival for other blocks
+
+
+                print("Databases: ", a)
+                print("Other blocks: ", b)
+
+
                 # Find all blocks that potentially contain links
                 potential_link_blocks = de.find_potential_links(blocks, notion)
-                
-                #databases = [entry for entry in databases]
-                print("Databases: ", potential_link_blocks)
 
                 return {
                     api_key_input_page: gr.Column(visible=False),
-                    choose_database_page: gr.Column(visible=True),
+                    choose_database_page: gr.Column(visible=True)
                 }
             
         
         with gr.Column(visible=False) as choose_database_page:
-            gr.Dropdown(
-                ["table1", "table2", "table3"], label="Database", info="Select a database to aggregate data from"
+            databases_dropdown = gr.Dropdown(
+                ["Students", "Class", "Assesment entries", "Learning Objectives", "Cycle", "Competence", "Exames"], label="Database", info="Select a database to aggregate data from"
             ),
             #database = gr.Textbox(label="Database", placeholder="Enter the database name")
             submit_btn_2 = gr.Button("Next")
@@ -123,27 +136,34 @@ def generator_page():
             with gr.Row():
                 with gr.Column(scale=4):
                     graph_type = gr.Dropdown(
-                        ["plot", "bar", "scatter", "hist"], label="Graph type", info="Select a graph type to display data"
+                        ["plot", "bar", "scatter", "hist", "heat"], label="Graph type", info="Select a graph type to display data"
                     ),
                     
                     gr.CheckboxGroup(
-                        ["property1", "property2", "property3"], label="X-Axis", info="Select properties to aggregate"
+                        ["Student", "Learning Objective", "Type of Participation", "Comment", "Date"], label="X-Axis", info="Select properties to aggregate"
                     ),
 
                     gr.CheckboxGroup(
-                        ["property1", "property2", "property3"], label="Y-Axis", info="Select properties to aggregate"
+                        ["Student", "Learning Objective", "Type of Participation", "Comment", "Date"], label="Y-Axis", info="Select properties to aggregate"
                     ),
                 with gr.Column(scale=2):
-                    plotted = gr.Plot(label="Plot"),
-                    url = gr.Textbox(label="URL", placeholder="Create an embedding block in Notion and paste this URL"),
+                    gr.BarPlot(
+                        pd.DataFrame({"X": [1, 2, 3], "Y": [10, 20, 30]}),
+                        x="X",
+                        y="Y",
+                        title="Bar Plot",
+                        tooltip=["X", "Y"],
+                        #y_lim=[20, 100],
+                    ),
+                    url = gr.Textbox("http://hardcoded.sorry:7860/?__theme=light&type=scatter&x=aaa&y=bbb&database=students", label="URL", placeholder="Create an embedding block in Notion and paste this URL"),
 
-                submit_btn_3 = gr.Button("Generate")
+            submit_btn_3 = gr.Button("Generate")
 
-                submit_btn_3.click(
-                    lambda: "Test",
-                    inputs=[],
-                    outputs=[]
-                )
+            submit_btn_3.click(
+                lambda: "Test",
+                inputs=[],
+                outputs=[]
+            )
 
             """def submit3(graph_type):
                 print("Submit 3")

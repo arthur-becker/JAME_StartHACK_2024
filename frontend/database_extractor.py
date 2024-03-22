@@ -29,7 +29,6 @@ def find_potential_links(blocks, notion):
     link_blocks = []
 
     for block in blocks:
-        print(block)
         link_blocks.append(block["id"])
 
     return link_blocks
