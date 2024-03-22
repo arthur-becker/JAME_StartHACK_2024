@@ -3,8 +3,14 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 from enum import Enum
+from notion_client import Client
+import database_extractor as de
 
-# TODO: get the databases name
+
+# Initialize the Notion client with your integration token
+# 3ab56ccefa1c45f288245ef90d8820d9
+# secret_7RzkbGjr3Z3gvzozIVWissfF8IzBMTzDZaIjjZV0l2s
+
 
 class Step(Enum):
     ENTER_API_KEY = 1
@@ -17,21 +23,26 @@ class Step(Enum):
 class WidgetBuilder:
     def __init__(self):
         self._api_key = None
+        self._page_id = None
         self._database = None
         self._properties = None
 
     # Step 1
         
-    def set_api_key(self, api_key: str):
+    def set_api_key(self, api_key: str, page_id: str):
         print("Setting API")
 
         self._api_key = api_key
+        self._page_id = page_id
 
         self._database = None # reset database
         self._properties = None # reset properties
 
     def get_api_key(self):
         return self._api_key
+    
+    def get_page_id(self):
+        return self._page_id
     
     # Step 2
     def set_database(self, database_name: str):
@@ -68,10 +79,26 @@ def generator_page():
 
         with gr.Column(visible=True) as api_key_input_page:
             api_key_input = gr.Textbox(label="API Key", placeholder="Enter your Notion API key")
+            page_id_input = gr.Textbox(label="Page ID", placeholder="Enter the ID the page with all databases")
             submit_btn_1 = gr.Button("Next")
         
-            def submit1(api_key):
-                print("Submit 1")
+            def submit1(api_key, page_id):
+                builder.set_api_key(api_key, page_id)
+
+                print("API Key: ", api_key)
+                print("Page ID: ", page_id)
+
+                # Retrieve databases
+                notion = Client(auth=api_key)
+
+                blocks = de.retrieve_blocks(page_id, notion)
+
+                # Find all blocks that potentially contain links
+                potential_link_blocks = de.find_potential_links(blocks, notion)
+                
+                #databases = [entry for entry in databases]
+                print("Databases: ", potential_link_blocks)
+
                 return {
                     api_key_input_page: gr.Column(visible=False),
                     choose_database_page: gr.Column(visible=True),
@@ -156,7 +183,7 @@ def generator_page():
         # Actions
         submit_btn_1.click(
             submit1,
-            [api_key_input],
+            [api_key_input, page_id_input],
             [choose_database_page,api_key_input_page],
         )
         submit_btn_2.click(
