@@ -2,6 +2,8 @@
 
 
 import gradio as gr
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
@@ -33,10 +35,17 @@ def make_plot(req: gr.Request):
 
     
     api=na.NotionAPI(api_key)
-    y,x=api.retrieve_values(database, x_column, y_column)
     
-    print(f"X: {x}")
-    print(f"Y: {y}")
+
+    
+    
+    
+    if type[0]=="x":
+        type=type[1:]
+        x=x_column.split(";")
+        y=y_column.split(";")
+    else:
+        y,x=api.retrieve_values(database, x_column, y_column)
 
     # Create a plot
     fig, ax = plt.subplots()
