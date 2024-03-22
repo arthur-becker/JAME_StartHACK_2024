@@ -28,4 +28,4 @@ if __name__ == "__main__":
         
         main.load(init_value, [], [generator, diagram])
 
-    main.launch()
+    main.launch(share=True)
